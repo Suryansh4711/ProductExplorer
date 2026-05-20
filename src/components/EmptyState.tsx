@@ -8,11 +8,15 @@ interface EmptyStateProps {
   onAction?: () => void;
 }
 
-export const EmptyState = ({message, actionLabel, onAction}: EmptyStateProps) => {
+export const EmptyState = ({
+  message,
+  actionLabel,
+  onAction,
+}: EmptyStateProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.iconWrapper}>
-        <Text style={styles.icon}>🗂️</Text>
+        <View style={styles.icon} />
       </View>
       <Text style={styles.title}>No products found</Text>
       <Text style={styles.message}>{message}</Text>
@@ -47,7 +51,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   icon: {
-    fontSize: 24,
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    backgroundColor: COLORS.tertiary,
   },
   title: {
     fontSize: 16,

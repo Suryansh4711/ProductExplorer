@@ -6,8 +6,9 @@
  */
 
 import React, {useEffect, useRef} from 'react';
-import {AppState, AppStateStatus, StatusBar} from 'react-native';
+import {AppState, AppStateStatus, StatusBar, StyleSheet} from 'react-native';
 import {Provider} from 'react-redux';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {enableScreens} from 'react-native-screens';
 import AppNavigator from './src/navigation/AppNavigator';
 import {store} from './src/redux/store';
@@ -38,11 +39,19 @@ const App = () => {
   }, []);
 
   return (
-    <Provider store={store}>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.neutral} />
-      <AppNavigator />
-    </Provider>
+    <GestureHandlerRootView style={styles.root}>
+      <Provider store={store}>
+        <StatusBar barStyle="dark-content" backgroundColor={COLORS.neutral} />
+        <AppNavigator />
+      </Provider>
+    </GestureHandlerRootView>
   );
 };
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+});
 
 export default App;

@@ -17,7 +17,7 @@ interface SearchBarProps {
 export const SearchBar = ({value, onChangeText, onClear}: SearchBarProps) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.icon}>🔍</Text>
+      <View style={styles.icon} />
       <TextInput
         value={value}
         onChangeText={onChangeText}
@@ -44,8 +44,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   icon: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: COLORS.tertiary,
     marginRight: 8,
-    fontSize: 16,
   },
   input: {
     flex: 1,

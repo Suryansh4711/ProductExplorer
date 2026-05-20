@@ -13,6 +13,9 @@ jest.mock('react-native', () => ({
     addEventListener: () => ({remove: jest.fn()}),
   },
   StatusBar: () => null,
+  StyleSheet: {
+    create: () => ({}),
+  },
 }));
 
 jest.mock('@react-native-async-storage/async-storage', () =>
@@ -76,6 +79,10 @@ jest.mock('../src/redux/store', () => ({
 
 jest.mock('../src/storage/storage', () => ({
   saveProductsState: jest.fn(),
+}));
+
+jest.mock('react-native-gesture-handler', () => ({
+  GestureHandlerRootView: ({children}: {children: React.ReactNode}) => children,
 }));
 
 const App = require('../App').default;

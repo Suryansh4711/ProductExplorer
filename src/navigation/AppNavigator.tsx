@@ -34,19 +34,19 @@ const TabIcon = ({label, focused}: {label: string; focused: boolean}) => (
 );
 
 const renderExploreIcon = ({focused}: {focused: boolean}) => (
-  <TabIcon label="🏠" focused={focused} />
+  <TabIcon label="E" focused={focused} />
 );
 
 const renderSavedIcon = ({focused}: {focused: boolean}) => (
-  <TabIcon label="🔖" focused={focused} />
+  <TabIcon label="S" focused={focused} />
 );
 
 const renderInventoryIcon = ({focused}: {focused: boolean}) => (
-  <TabIcon label="📦" focused={focused} />
+  <TabIcon label="I" focused={focused} />
 );
 
 const renderProfileIcon = ({focused}: {focused: boolean}) => (
-  <TabIcon label="👤" focused={focused} />
+  <TabIcon label="P" focused={focused} />
 );
 
 const MainTabs = () => {

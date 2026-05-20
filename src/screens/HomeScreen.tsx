@@ -57,18 +57,26 @@ const HomeScreen = ({navigation}: Props) => {
   );
 
   useEffect(() => {
-    if (initialLoad.current) {
-      initialLoad.current = false;
-      if (products.length === 0) {
-        handleFetch(0);
-      }
+    if (!initialLoad.current) {
+      return;
+    }
+
+    initialLoad.current = false;
+    if (searchQuery.trim()) {
+      setQuery(searchQuery);
+    }
+    handleFetch(0);
+  }, [handleFetch, searchQuery]);
+
+  useEffect(() => {
+    if (initialLoad.current || debouncedQuery === searchQuery) {
       return;
     }
 
     dispatch(setSearchQuery(debouncedQuery));
     dispatch(resetProducts());
     handleFetch(0);
-  }, [debouncedQuery, dispatch, handleFetch, products.length]);
+  }, [debouncedQuery, dispatch, handleFetch, searchQuery]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -99,11 +107,11 @@ const HomeScreen = ({navigation}: Props) => {
       <View style={styles.header}>
         <View style={styles.topRow}>
           <TouchableOpacity style={styles.iconButton}>
-            <Text style={styles.icon}>≡</Text>
+            <View style={styles.iconLine} />
           </TouchableOpacity>
           <Text style={styles.title}>ProductExplorer</Text>
           <TouchableOpacity style={styles.iconButton}>
-            <Text style={styles.icon}>🔍</Text>
+            <View style={styles.iconDot} />
           </TouchableOpacity>
         </View>
         <SearchBar
@@ -206,8 +214,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  icon: {
-    fontSize: 16,
+  iconLine: {
+    width: 14,
+    height: 2,
+    borderRadius: 2,
+    backgroundColor: COLORS.tertiary,
+  },
+  iconDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: COLORS.tertiary,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
