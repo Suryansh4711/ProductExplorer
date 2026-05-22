@@ -5,15 +5,17 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {useNetInfo} from '@react-native-community/netinfo';
 import {ProductCard} from '../components/ProductCard';
 import {SearchBar} from '../components/SearchBar';
 import {Loader} from '../components/Loader';
 import {EmptyState} from '../components/EmptyState';
 import {ErrorView} from '../components/ErrorView';
+import {HeaderIconButton} from '../components/HeaderIconButton';
+import {Sidebar} from '../components/Sidebar';
 import {useDebounce} from '../hooks/useDebounce';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {
@@ -38,6 +40,8 @@ const HomeScreen = ({navigation}: Props) => {
     useAppSelector(selectProductsState);
   const [query, setQuery] = useState(searchQuery);
   const [refreshing, setRefreshing] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const netInfo = useNetInfo();
   const debouncedQuery = useDebounce(query, 500);
   const initialLoad = useRef(true);
 
@@ -106,13 +110,12 @@ const HomeScreen = ({navigation}: Props) => {
     () => (
       <View style={styles.header}>
         <View style={styles.topRow}>
-          <TouchableOpacity style={styles.iconButton}>
-            <View style={styles.iconLine} />
-          </TouchableOpacity>
+          <HeaderIconButton
+            icon="menu"
+            onPress={() => setSidebarVisible(true)}
+          />
           <Text style={styles.title}>ProductExplorer</Text>
-          <TouchableOpacity style={styles.iconButton}>
-            <View style={styles.iconDot} />
-          </TouchableOpacity>
+          <HeaderIconButton icon="search" onPress={() => undefined} />
         </View>
         <SearchBar
           value={query}
@@ -124,6 +127,16 @@ const HomeScreen = ({navigation}: Props) => {
     [handleClear, query],
   );
 
+  const handleSidebarNavigate = useCallback(
+    (routeName: string) => {
+      const parent = navigation.getParent();
+      if (parent) {
+        parent.navigate(routeName as never);
+      }
+    },
+    [navigation],
+  );
+
   const listFooter = useMemo(() => {
     if (!loading || page === 0) {
       return null;
@@ -131,8 +144,15 @@ const HomeScreen = ({navigation}: Props) => {
     return <Loader message="Loading more products..." />;
   }, [loading, page]);
 
+  const isOffline = netInfo.isConnected === false;
+
   return (
     <SafeAreaView style={styles.container}>
+      <Sidebar
+        visible={sidebarVisible}
+        onClose={() => setSidebarVisible(false)}
+        onNavigate={handleSidebarNavigate}
+      />
       <FlatList
         data={products}
         keyExtractor={item => item.id.toString()}
@@ -178,6 +198,14 @@ const HomeScreen = ({navigation}: Props) => {
           <ErrorView message={error} onRetry={() => handleFetch(0)} />
         </View>
       ) : null}
+      {isOffline ? (
+        <View style={styles.overlay}>
+          <ErrorView
+            message="No internet connection. Please reconnect and try again."
+            onRetry={() => handleFetch(0)}
+          />
+        </View>
+      ) : null}
     </SafeAreaView>
   );
 };
@@ -188,43 +216,23 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.neutral,
   },
   listContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 24,
+    paddingHorizontal: 18,
+    paddingBottom: 32,
   },
   header: {
-    paddingTop: 8,
-    paddingBottom: 16,
+    paddingTop: 12,
+    paddingBottom: 20,
   },
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   title: {
     fontSize: 16,
     fontFamily: FONTS.headline,
     color: COLORS.primary,
-  },
-  iconButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: COLORS.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconLine: {
-    width: 14,
-    height: 2,
-    borderRadius: 2,
-    backgroundColor: COLORS.tertiary,
-  },
-  iconDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: COLORS.tertiary,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
